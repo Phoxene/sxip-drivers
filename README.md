@@ -3,6 +3,7 @@
 ![Build Status](https://img.shields.io/pypi/v/sxip_drivers.svg)
 ![python](https://img.shields.io/pypi/pyversions/sxip_drivers.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Documentation Status](https://readthedocs.org/projects/sxip-drivers/badge/?version=main)](https://sxip-drivers.readthedocs.io/)
 
 ![Phoxene Logo](https://www.phoxene.com/wp-content/uploads/2018/09/flash-strobe-manufacturer-phoxene.png)
 
@@ -11,6 +12,9 @@ This module implements basic drivers that can be used to manage PHOXENE's flash 
 # Usage
 This module is intended to be use by software developpers in order to speed-up the integration
 of PHOXENE's flash devices by our customers.
+
+# Documentation
+https://sxip-drivers.readthedocs.io/en/main/
 
 # Installation
 ```shell
