@@ -1,4 +1,4 @@
-# Phoxene SxIP drivers
+# PHOXENE SxIP drivers
 
 ![Build Status](https://img.shields.io/pypi/v/sxip_drivers.svg)
 ![python](https://img.shields.io/pypi/pyversions/sxip_drivers.svg)
@@ -6,15 +6,15 @@
 
 ![Phoxene Logo](https://www.phoxene.com/wp-content/uploads/2018/09/flash-strobe-manufacturer-phoxene.png)
 
-This package implements basic drivers that can be used to manage PHOXENE's flash devices
+This module implements basic drivers that can be used to manage PHOXENE's flash devices
 
 # Usage
-This package is intended to be use by software developpers in order to speed-up the integration
+This module is intended to be use by software developpers in order to speed-up the integration
 of PHOXENE's flash devices by our customers.
 
 # Installation
 ```shell
-pip install -i https://test.pypi.org/simple/ sxip-drivers
+pip install -i https://pypi.org/simple/ sxip-drivers
 ```
 
 # Dependencies

@@ -1,2 +1,5 @@
-sphinx-rtd-theme
 phox_modbus
+build
+twine
+sphinx
+sphinx-rtd-theme

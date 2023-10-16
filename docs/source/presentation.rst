@@ -5,10 +5,10 @@ phox-modbus
 Overview
 ========
 
-This module is a Python Modbus serial RTU driver
+This module is a Python driver for PHOXENE's SxIP flash devices
 
-It has been developped as Modbus layer for Phoxene's devices that
-implements a serial Modbus communication.
+It is intended to be use by software developpers in order to speed-up the integration
+of PHOXENE's flash devices by our customers.
 
 It is realeased under a free software licence,
 see the LICENSE file for more details
@@ -18,16 +18,14 @@ MIT License Copyright (c) 2023 PHOXENE
 
 Features
 ========
-* Implemented Modbus functions:
-    * Fonction 03 (read holding registers)
-    * Fonction 04 (read input registers)
-    * Fonction 05 (force single coil)
-    * Fonction 06 (preset single resgister)
-    * Fonction 08: subfunctions 0 and 11 to 19 (diagnostics)
-    * Fonction 11 (get comm event counter)
-    * Fonction 12 (get comm event log)
-    * Fonction 16 (write_registers)
-    * Fonction 43 (Read Device Identification)
+* Allow to instanciate a SxIP communication objects
+* Implements general functions
+    * Read multiple registers
+    * Write a single register
+    * Write multiple registers
+    * Write a single coil
+* Implements SxIP dedicated functions:
+
 * Optional "fast reception mode" that skip receive timeout
   by using frame lenght prediction
 * Hack tools allows to test modbus server response to corrupted frames

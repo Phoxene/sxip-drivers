@@ -1,21 +1,18 @@
 .. _welcome:
 
-Phoxene's Modbus drivers documentation
+PHOXENE's Sxip drivers documentation
 ======================================
 
-This module is a Python Modbus RTU on serial port driver
+This module is a Python driver for PHOXENE's SxIP flash devices
 
-It has been developped as Modbus layer for Phoxene's devices that
-implements a serial Modbus communication.
+This module is intended to be use by software developpers in order to speed-up the integration
+of PHOXENE's flash devices by our customers.
 
-It is mainly used by Phoxene's applications or devices' drivers
+Project page on GitHub: 
+https://github.com/Phoxene/sxip-drivers
 
-Project page on GitHub: https://github.com/Phoxene/phox-modbus
-
-Download page: https://pypi.org/project/phox-modbus/
-
-This page: https://phox-modbus.readthedocs.io/en/latest/
-
+Download page: 
+https://pypi.org/project/sxip-drivers/
 
 
 Contents:
@@ -24,5 +21,6 @@ Contents:
    :maxdepth: 2
 
    presentation
+   shortintro
    autodoc
    examples

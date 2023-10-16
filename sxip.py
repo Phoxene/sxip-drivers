@@ -3,7 +3,7 @@
 # MIT License: 
 # https://opensource.org/license/mit/
 #
-""" Python drivers for Phoxene's SxIP devices.
+""" Python drivers for PHOXENE's SxIP devices.
 
 Usage:
     This package is intended to be use by software developpers
@@ -13,25 +13,21 @@ __authors__ = ("Aurélien PLANTIN")
 __contact__ = ("a.plantin@phoxene.com")
 __copyright__ = "MIT"
 __date__ = "2023-10-10"
-__version__= "1.0.0"
+__version__= "1.0.2"
 #Style guide: refers to PEP 8
 #Type Hints: refers to PEP 484
-#Docstrings: refers to Google Style Python Docstrings 
+#Docstrings: refers to Spinx documentation 
 
 import modbus
 from modbus import ModbusError
 
 class Sxip:     
-    """This class defines a SxIP device.
-
-    Allows to instantiate a SxIP device, then provides methods to access it.
+    """Allows to instantiate a SxIP device, then provides methods to access it.
     
-    Args:
-        modbus_link: shall be instantiated from the modbus module
-                     is the modbus link on which the device is connected
-                     None is accepted to allows modbus link association
-                       subsequently to the device instantiation
-        modbus_addr: device's Modbus slave address (0 to 247). 0 is broadcast.
+    :param modbus_link: modbus_link objet instantiated from the modbus module
+                        or None (default)
+    :param modbus_addr: device's Modbus slave address (0 to 247).
+                        0 is broadcast.
     """
     def __init__(self, modbus_link: modbus.Modbus = None, modbus_addr: int = 1
     ) -> None:
@@ -60,18 +56,17 @@ class Sxip:
     def read_registers(self, reg_addr: int, nb_reg: int = 1, **kwargs) -> list:
         """Read a register from the SxIP device.
 
-        Args:
-            reg_addr: Starting address (0x0000 to 0xFFFF).
-            nb_reg: Quantity of registers to read (1 to 125).
-            **kwargs: Arbitrary keyword arguments.
+        :param reg_addr: Starting address (0x0000 to 0xFFFF).
+        :param nb_reg: Quantity of registers to read (1 to 125).
+        :param kwargs: Arbitrary keyword arguments.
 
-        Returns:
-            Registers' content (list of integers).
+        :returns list(int): Registers' content.
 
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """ 
         return(self.modbus_link.read_registers(self.modbus_addr, 
                                                reg_addr, nb_reg, **kwargs))
@@ -81,14 +76,14 @@ class Sxip:
         ) -> None:
         """Write a register to the SxIP device.
 
-        Args:
-            reg_addr: Starting address (0x0000 to 0xFFFF).
-            value: Value to write (0x0000 to 0xFFFF).
+        :param reg_addr: Starting address (0x0000 to 0xFFFF).
+        :param value: Value to write (0x0000 to 0xFFFF).
 
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """ 
         self.modbus_link.write_register(self.modbus_addr, 
                                         reg_addr, value, **kwargs)
@@ -98,14 +93,15 @@ class Sxip:
         ) -> None:
         """Write multiple registers to the SxIP device.
 
-        Args:
-            reg_addr: Starting address (0x0000 to 0xFFFF).
-            values: List of words (0x0000 to 0xFFFF) to write (max 123 words).
+        :param reg_addr: Starting address (0x0000 to 0xFFFF).
+        :param values: List of words (0x0000 to 0xFFFF) to write
+                       (max 123 words).
        
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """          
         self.modbus_link.write_registers(self.modbus_addr,
                                          reg_addr, values, **kwargs)
@@ -113,14 +109,14 @@ class Sxip:
     def write_coil(self, coil_addr: int, state: str, **kwargs) -> None:
         """Write a coil to the SxIP device.
         
-        Args:
-            reg_addr: Coil's address (0x0000 to 0xFFFF).
-            state: state to write ('ON' or 'OFF').
+        :param reg_addr: Coil's address (0x0000 to 0xFFFF).
+        :param state: state to write ('ON' or 'OFF').
        
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """   
         self.modbus_link.write_single_coil(self.modbus_addr,
                                            coil_addr, state, **kwargs)
@@ -131,40 +127,44 @@ class Sxip:
     def reset(self) -> None:
         """Reset the SxIP device (software reset).
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         self.write_coil(coil_addr = 1, state = 'ON')
 
     def set_init_done(self) -> None:
         """Set the init done flag of the SxIP device.
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         self.write_coil(coil_addr = 2, state = 'ON')
 
     def clear_init_done(self) -> None:
         """Clear the init done flag of the SxIP device.
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         self.write_coil(coil_addr = 2, state = 'OFF')
 
     def clear(self) -> None:
         """Clear error flags of the SxIP device.
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         self.write_coil(coil_addr = 3, state = 'ON')
 
@@ -177,13 +177,13 @@ class Sxip:
         self.write_coil(coil_addr = 4, state = 'ON')
 
     def save_settings(self) -> None:
-        print ('Save settings')
         """Save actual settings in the SxIP device memory.
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         # Try bloc is used for timeout restoration in case of exception
         SAVE_SETTINGS_TIMEOUT = 2
@@ -195,9 +195,7 @@ class Sxip:
         except Exception as exc:        # Capture all exceptions
             raise(exc)                  # And propagate
         finally:
-            print ('Save settings2')
             self.modbus_link.timeout = self.modbus_link.init_timeout    # Restore initial timeout
-            print ('Save settings3')
 
     def clear_lamp_count(self) -> None:
         """Clear the SxIP device lamp count (At lamp replacement)."""
@@ -209,15 +207,14 @@ class Sxip:
     def get_state(self) -> dict:
         """Read device's state.
         
-        Returns:
-            {str: bool}
-            A dictinonay of flags' names and states
-            state values could be 0 or 1:
+        :returns {str: bool}: A dictinonay of flags' names and states
+                              state values could be 0 or 1:
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         flags_dict = {'configured'          : (0, 0),
                       'initialized'         : (0, 1),
@@ -253,35 +250,38 @@ class Sxip:
     def get_config_inputs(self) -> int:
         """Read device's configuration inputs' value (1..16).
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         return(((self.read_registers(reg_addr = 262)[0] & 0b1111) ^ 0b1111) + 1)
 
     def get_io_state(self, output:str = 'binary') -> dict or int:
         """Read device's inputs and outputs' state.
 
-        Args:
-            output: 'binary' or 'dict'
+        :param output: 'binary' or 'dict'
 
-        Returns:
-            if output is selected to 'binary':
-                A flag byte reflecting IOs state:
+        :returns flag byte: if output is selected to 'binary':
             
-              | bit |   6     |   5    |    4      |  3  |  2  |  1  |  0  |
-              |  IO | ISO_OUT | TTL_IO | DRY_INPUT | IN4 | IN3 | IN2 | IN1 |
-            
-              DRY_INPUT and ISO_OUTPUT are 1 when closed
-        
-            if output is selected to 'dict':
-                A dictionnay with couples of IOnames and states
+            ===  =======  ====== ========= === === === ===
+            bit     6       5        4      3   2   1   0
+            ===  =======  ====== ========= === === === ===
+            IO   ISO_OUT  TTL_IO DRY_INPUT IN4 IN3 IN2 IN1
+            ===  =======  ====== ========= === === === ===
+     
+            DRY_INPUT and ISO_OUTPUT are 1 when closed
 
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+ 
+        :returns dict: if output is selected to 'dict':
+                       A dictionnay with couples of IOnames and states
+
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         # Check if the output argument is in the expected list
         if output not in ['binary', 'dict']:
@@ -309,23 +309,24 @@ class Sxip:
     def get_serial(self) -> int:
         """Read device's serial number.
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         return(self.read_registers(reg_addr = 0)[0])
 
     def get_date(self) -> tuple:
         """Read device's manufacturing date.
         
-        Returns:
-            list (int: YYYY, int: WW)
+        :returns list(int): year, week
 
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         date = self.read_registers(reg_addr = 1)[0]
         week = date & 0xFF
@@ -335,13 +336,13 @@ class Sxip:
     def get_hwrev(self) -> str:
         """Read device's hardware revision.
 
-        Returns:
-            str: 'A.00'
+        :returns str: Major.minor (A.00)
 
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         rev = self.read_registers(reg_addr = 2)[0]
         major = chr( rev[0]  & 0xFF ) + 65
@@ -351,80 +352,88 @@ class Sxip:
     def get_modbus_address(self) -> int:
         """Read device's modbus address
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         return(self.read_registers(reg_addr = 270)[0])
 
     def get_energy_level(self) -> int:
         """Read device's current energy level
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         return(self.read_registers(reg_addr = 271)[0])
 
     def get_ftime(self) -> int:
         """Read device's current flash time (µs)
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         return(self.read_registers(reg_addr = 272)[0])
 
     def get_input_voltage(self) -> int:
         """Return device's input voltage (V)
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         return(self.read_registers(reg_addr = 273)[0] / 1000)
 
     def get_temperature(self) -> int:
         """Read device's temperature (°C)
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         return(self.read_registers(reg_addr = 274)[0])
 
     def get_last_flash_energy(self) -> int:
         """Read device's last flash energy (J)
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         return(self.read_registers(reg_addr = 279)[0] / 100)
 
     def get_flash_error_count(self) -> int:
         """Read device's error count
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         return(self.read_registers(reg_addr = 282)[0])
 
     def get_flash_healt(self) -> int:
         """Read device's health value
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         return(self.read_registers(reg_addr = 283)[0])
 
@@ -435,10 +444,11 @@ class Sxip:
             int: minimum temperature (°C)
             int: maximum_temperature (°C)
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         minmax_temp = self.read_registers(reg_addr = 288)[0]
         max_temp = minmax_temp  & 0xFF
@@ -448,10 +458,11 @@ class Sxip:
     def get_start_count(self):
         """Read device's start count
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         result = self.read_registers(reg_addr = 289, nb_reg = 2)
         return(result[0] + ( result[1] << 8 ) )  
@@ -459,10 +470,11 @@ class Sxip:
     def get_time_count(self):
         """Read device's time counter since last power-up
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         result = self.read_registers(reg_addr = 291, nb_reg = 2)
         return(result[0] + ( result[1] << 8 ) )  
@@ -470,10 +482,11 @@ class Sxip:
     def get_total_time_count(self):
         """Read slave device's total power-up time count
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         result = self.read_registers(reg_addr = 293, nb_reg = 2)
         return(result[0] + ( result[1] << 8 ) )  
@@ -481,10 +494,11 @@ class Sxip:
     def get_flash_count(self):
         """Read device's flash counter since last power-up
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         result = self.read_registers(reg_addr = 295, nb_reg = 2)
         return(result[0] + ( result[1] << 8 ) )  
@@ -492,10 +506,11 @@ class Sxip:
     def get_total_flash_count(self):
         """Read device's total flash counter
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         result = self.read_registers(reg_addr = 297, nb_reg = 2)
         return(result[0] + ( result[1] << 8 ) )  
@@ -503,10 +518,11 @@ class Sxip:
     def get_lamp_count(self):
         """Read device's lamp counter
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         result = self.read_registers(reg_addr = 301, nb_reg = 2)
         return(result[0] + ( result[1] << 8 ) )  
@@ -517,37 +533,41 @@ class Sxip:
     def set_voltage(self, voltage: int) -> None:
         """Set the regulation voltage (V)
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         self.write_register(reg_addr = 18, value = 10 * voltage)
 
     def set_ftime(self, ftime: int) -> None:
         """Set the flash time (µs)
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         self.write_register(reg_addr = 50, value = ftime)
 
     def set_mode(self, mode: str = 'ftime') -> None:
         """Set the device operating mode.
         
-        Args:
-            mode: 'ftime' -> Fixed ftime.
-                  'burst' -> Ftime is according to the ftime table. 
-                             Allows successive falshes without recharge.
-                  'energy_reg' -> Ftime is according to the energy level table.
-                                  Flash energy is regulated.
+        :param mode: ftime = Fixed ftime.
+
+                     burst = Ftime is according to the ftime table.
+                     Allows successive flashes without recharge.
+                     
+                     energy_reg = Ftime is according to the energy level table.
+                     Flash energy is regulated.
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         # Check that the "mode" argument is in the expected list
         mode_dict = {'ftime': 0, 'bursts': 1, 'energy_reg' : 2}
@@ -558,19 +578,21 @@ class Sxip:
     def set_fan(self, mode: str = 'temp_regulated', level: int = 100) -> None:
         """Set the fan's operating parameters.
 
-        Args:        
-            mode: 'fixed level' -> Fan speed is fixed to the level
-                  'temp_regulated' -> Fan speed is regulated according
-                                      to both power and temperature
-                                      with is the minium speed = level.
-                  'power_regulated' -> Fan speed is regulated according to
-                                       power with is the minium speed = level
-            level: [0..100] %   
+        :param mode: fixed level = Fan speed is fixed to the level.
+                     
+                     temp_regulated = Fan speed is regulated according
+                     to both power and temperature with minium speed = level.
+                     
+                     power_regulated = Fan speed is regulated according to
+                     power with is the minium speed = level.
+                     
+        :param level: [0..100] %   
 
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         if level > 100:
             raise ValueError("Level parameter > 100%")
@@ -587,16 +609,16 @@ class Sxip:
                         ) -> None:
         """Set flash health supervision parameters.
 
-        Args:
-            missed_flash_weight: 
+        :param missed_flash_weight: 
                 When a flash is missed, health value is increased by this value
                 When a flash is succeded, health value is decreased by 1
-            health threshold: Health value that triggers an error.
+        :param health_threshold: Health value that triggers an error.
 
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         values = [missed_flash_weight, health_treshold]
         self.write_registers(reg_addr = 37, values = values)        #### A tester!!!
@@ -604,46 +626,46 @@ class Sxip:
     def set_reset_on_failure(self, delay: int) -> None:
         """Set the reset on failure delay
 
-        Args:        
-            delay: Delay from failure detection to reset.
-                   If 0, SxIP will not reset (remains locked in failure)
+        :param delay: Delay from failure detection to reset.
+                      If 0, SxIP will not reset (remains locked in failure)
 
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         self.write_register(reg_addr = 39, value = delay)
 
     def set_modbus_addr(self, address: int) -> None:
         """Set the modbus address.
 
-        Args:          
-            address: Modbus address [0..247]
+        :param address: Modbus address [0..247]
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         if address > 247:
             raise ValueError("Modbus address shall be in [0..247]")
         self.write_register(reg_addr = 48, value = address)
 
-    def set_energy_level(self, 
-                         prim_energy_level: int, 
-                         alt_energy_level: int = 0
-                        ) -> None:
+    def set_energy_levels(self, 
+                          prim_energy_level: int, 
+                          alt_energy_level: int = 0
+                         ) -> None:
         """Set the energy levels
 
-        Args:          
-            prim_energy_level: Energy level [0..16]
-            alt_energy_level: Energy level [0..16]
+        :param prim_energy_level: Energy level [0..16]
+        :param alt_energy_level: Energy level [0..16]
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """
         if prim_energy_level > 16:
             raise ValueError("Primary energy level shall be in [0..16]")
@@ -655,14 +677,13 @@ class Sxip:
     def set_trigger_delay(self, delay: int):
         """Set delay from trigger input edge to flash triggering.
 
-        Args:          
-            delay: delay from trigger input edge to flash triggering (µs)
-            alt_energy_level: Energy level [0..16]
+        :param delay: delay from trigger input edge to flash triggering (µs)
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """       
         # Comment ça se passe pour les valeurs interdites ?????
         self.write_register(reg_addr = 51, value = delay)
@@ -671,26 +692,27 @@ class Sxip:
         # Comment ça se passe pour les négatifs ???
         """Set synchronisation signal relatively to the flash triggering.
         
-        Args:          
-            time_shift: time shift (µs)
-            alt_energy_level: Energy level [0..16]
+        :param time_shift: time shift (µs)
+        :param alt_energy_level: Energy level [0..16]
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
-                         or the device answers with an exception.
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """       
         self.write_register(reg_addr = 52, value = time_shift)
     
     def set_sync_pulse_time(self, duration: int) -> None:
         """Set synchronisation pulse duration 
         
-        Args:          
-            duration: synchronisation pulse width (µs)
+        :param duration: synchronisation pulse width (µs)
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """             
         self.write_register(reg_addr = 53, value = duration)
 
@@ -701,18 +723,25 @@ class Sxip:
                 ) -> None:
         """Configure IO5 (Dry input) functionnality.
         
-        Args:   
-            polarity: low  : active low, trigger on falling edges
-                      high': active high, trigger on rising edges
-            buffer: schmitt: optimized for 12V levels (Levels are 2.0V & 8.0V)
-                        TTL: 5V compatible (levels are 1.6V & 4.0V)
-            mode: not_used      : Has no effect
-                  flash_trigger : Trigger the flash
-                  alt_energy_selector: Turns to alternate energy level
+        :param polarity: low = active low, trigger on falling edges.
+
+                         high = active high, trigger on rising edges.
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
+        :param buffer: schmitt = optimized for 12V levels (Levels are 2.0V & 8.0V).
+                       
+                       TTL = 5V compatible (levels are 1.6V & 4.0V).
+        
+        :param mode: not_used = Has no effect.
+                     
+                     flash_trigger = Trigger the flash.
+                     
+                     alt_energy_selector = Turns to alternate energy level.
+        
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """    
         pol_dict = {'low': 0, 'high': 1}
         buffer_dict = {'schmitt': 0, 'TTL': 1}
@@ -735,21 +764,31 @@ class Sxip:
                 ) -> None:
         """Configure IO6 (TTL IO) functionnality.
         
-        Args:   
-            polarity: low  : active low, trigger on falling edges
-                      high': active high, trigger on rising edges
-            buffer: schmitt: Levels are 1.0V and 4.0V)
-                        TTL: 3.3V compatible (levels are 0.8V and 2.0V)
-            mode: not_used      : Has no effect
-                  flash_trigger : Trigger the flash
-                  alt_energy_selector: Turns to alternate energy level
-                  low           : Force output to low state
-                  high          : Force output to high state
-                  sync_output   : Output the synchronisation signal
+        :param polarity: low  = active low, trigger on falling edges.
+
+                         high = active high, trigger on rising edges.
+
+        :param buffer: schmitt = Levels are 1.0V and 4.0V).
+
+                       TTL = 3.3V compatible (levels are 0.8V and 2.0V).
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
+        :param mode: not_used = Has no effect.
+
+                     flash_trigger = Trigger the flash.
+
+                     alt_energy_selector = Turns to alternate energy level.
+                     
+                     low = Force output to low state.
+
+                     high = Force output to high state.
+                     
+                     sync_output = Output the synchronisation signal.
+        
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """   
         pol_dict = {'low': 0, 'high': 1}
         buffer_dict = {'schmitt': 0, 'TTL': 1}
@@ -769,23 +808,30 @@ class Sxip:
                  ( buffer_dict[buffer] << 5 ))
         self.write_register(reg_addr = 63, value = value)
 
+### polority param to be completed (open or closed)
     def set_io7(self,
         polarity: str = 'high',
         mode: str = 'not_used'
         ) -> None:
         """Configure IO7 (Isolated output) functionnality.
         
-        Args:   
-            polarity: low  : active low
-                      high': active high            ### TOBE COMPLETED
-            mode: not_used      : Has no effect
-                  open          : Force output to open state
-                  closed        : Force output to closed state
-                  sync_output   : Output the synchronisation signal
+        :param polarity: low = active low.
+
+                         high = active high.
+
+        :param mode: not_used = Has no effect.
+                     
+                     open = Force output to open state.
+                     
+                     closed = Force output to closed state.
+                     
+                     sync_output = Output the synchronisation signal.
         
-        Raises:
-            ValueError: One of the arguments is not as expected.
-            ModbusError: A communication error occurs
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
         """   
         pol_dict = {'low': 0, 'high': 1}
         mode_dict = {'not_used': 0, 'open': 8, 'closed': 9, 'sync_output': 10}
@@ -835,7 +881,7 @@ if __name__ == "__main__":
         flash_device.set_io6(polarity = 'low', mode = 'alt_energy_selector', buffer = 'TTL')
         flash_device.save_settings()
         flash_device.modbus_link.register_feedback_handler(terminal_output)
-        flash_device.set_energy_level(prim_energy_level = 9, alt_energy_level = 8)
+        flash_device.set_energy_levels(prim_energy_level = 9, alt_energy_level = 8)
     except ModbusError as exc:
         print(f'Modbus error: {exc}')
     modbus_link.close()
