@@ -1,6 +1,6 @@
-===========
-phox-modbus
-===========
+============
+SxIP drivers
+============
 
 Overview
 ========
@@ -35,10 +35,10 @@ Requirements
 
 Installation
 ============
-phox-modbus can be installed from PyPI:
+sxip-drivers can be installed from PyPI:
 
 .. code-block:: console
 
-    pip install phox-modbus
+    pip install sxip-drivers
 
 Developers also may be interested to get the source archive, because it contains examples, tests and this documentation.
