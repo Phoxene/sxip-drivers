@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sxip-drivers"
-version = "1.0.3"
+version = "1.0.4"
 license = "MIT"
 authors = [
   { name="Aurelien PLANTIN", email="a.plantin@phoxene.com"}

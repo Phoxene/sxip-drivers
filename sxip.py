@@ -12,8 +12,8 @@ Usage:
 __authors__ = ("Aurélien PLANTIN")
 __contact__ = ("a.plantin@phoxene.com")
 __copyright__ = "MIT"
-__date__ = "2023-10-10"
-__version__= "1.0.3"
+__date__ = "2024-01-25"
+__version__= "1.0.4"
 #Style guide: refers to PEP 8
 #Type Hints: refers to PEP 484
 #Docstrings: refers to Spinx documentation 
@@ -53,6 +53,22 @@ class Sxip:
     """ ------------------------------------------------------------------- """
     """ -                    General modbus functions                     - """
     """ ------------------------------------------------------------------- """
+    def read_register(self, reg_addr: int, **kwargs) -> int:
+        """Read a single registers from the SxIP device.
+
+        :param reg_addr: Starting address (0x0000 to 0xFFFF).
+        :param kwargs: Arbitrary keyword arguments.
+
+        :returns (int): Register's value.
+
+        :raises ValueError: Arguments are out of range.
+        :raises ModbusError: Modbus protocol error
+                            or the device answers with an exception.
+        :raises serial.SerialException: Serial port is missing, busy,
+                                        or can not be configured.
+        """ 
+        return(self.modbus_link.read_register(self.modbus_addr, reg_addr))
+
     def read_registers(self, reg_addr: int, nb_reg: int = 1, **kwargs) -> list:
         """Read a register from the SxIP device.
 
@@ -222,7 +238,7 @@ class Sxip:
                       'com_error'           : (0, 3),
                       'error'               : (0, 4),
                       'failure'             : (0, 5),
-                      'alt_energy_level'    : (0, 6),
+                      'alt_energy_level'    : (0, 8),
                       'vin_out_of_range'    : (1, 0),
                       'ht_unreached'        : (1, 1),
                       'was_not_ready'       : (1, 2),
@@ -688,7 +704,7 @@ class Sxip:
         # Comment ça se passe pour les valeurs interdites ?????
         self.write_register(reg_addr = 51, value = delay)
 
-    def set_sync_shift(self, slave:int, time_shift: int) -> None:
+    def set_sync_shift(self, time_shift: int) -> None:
         # Comment ça se passe pour les négatifs ???
         """Set synchronisation signal relatively to the flash triggering.
         
@@ -808,16 +824,15 @@ class Sxip:
                  ( buffer_dict[buffer] << 5 ))
         self.write_register(reg_addr = 63, value = value)
 
-### polority param to be completed (open or closed)
     def set_io7(self,
-        polarity: str = 'high',
+        polarity: str = 'no',
         mode: str = 'not_used'
         ) -> None:
         """Configure IO7 (Isolated output) functionnality.
         
-        :param polarity: low = active low.
+        :param polarity: nc = Normally Closed.
 
-                         high = active high.
+                         no = Normally Open.
 
         :param mode: not_used = Has no effect.
                      
@@ -833,26 +848,31 @@ class Sxip:
         :raises serial.SerialException: Serial port is missing, busy,
                                         or can not be configured.
         """   
-        pol_dict = {'low': 0, 'high': 1}
+        pol_dict = {'nc': 0, 'no': 1}
         mode_dict = {'not_used': 0, 'open': 8, 'closed': 9, 'sync_output': 10}
         if polarity not in pol_dict:
             raise ValueError("Unexpected value for polarity parameter")
         if mode not in mode_dict:
             raise ValueError("Unexpected value for mode selection parameter")
         value = pol_dict[polarity] + ( mode_dict[mode] << 1 )
-        self.write_register(reg_addr = 63, value = value)
+        self.write_register(reg_addr = 64, value = value)
 
 if __name__ == "__main__":
-    print("sxip test routine")
+    import time
+    print("\sxip test routine")
+    
     def terminal_output(**kwargs):
         '''This function output everything passed as key arguments to the terminal'''
         for k, v in kwargs.items():
             print(f"{k}: {v}")
 
+    #Open a Modbus link on "COM3" port
     modbus_link = modbus.Modbus(port = "COM3")
+    #Instanciate a flash device on the modbus link with modbus address = 1
     flash_device = Sxip(modbus_link = modbus_link, modbus_addr = 1)
-    #flash_device.modbus_addr = 1
-    try: 
+
+    print ("\n--- Read device information:")
+    try:
         print(flash_device.read_registers(reg_addr = 1))
         print(f'Serial: {flash_device.get_serial()}')
         year, week = flash_device.get_date()
@@ -878,11 +898,46 @@ if __name__ == "__main__":
         state_dict = flash_device.get_state()
         print (f'state: {state_dict}')
         print (f'config_inputs: {flash_device.get_config_inputs()}')
-        flash_device.set_io6(polarity = 'low', mode = 'alt_energy_selector', buffer = 'TTL')
-        flash_device.save_settings()
-        flash_device.modbus_link.register_feedback_handler(terminal_output)
-        flash_device.set_energy_levels(prim_energy_level = 9, alt_energy_level = 8)
     except ModbusError as exc:
         print(f'Modbus error: {exc}')
+
+    print ("\n--- Change IOs and energy level configuration:")
+    try:
+        # Configure IO6 for active low alternate energy selection with 5V input level and active
+        flash_device.set_io6(polarity = 'low', mode = 'alt_energy_selector', buffer = 'TTL')
+        
+        # Configure IO6 has active high synchronisation output
+        #flash_device.set_io6(polarity = 'high', mode = 'sync_output')
+
+        # Configure IO6 low
+        #flash_device.set_io6(mode = 'low')
+
+        # Configure IO7 has normally open sync_output
+        flash_device.set_io7(polarity = 'no',  mode = 'sync_output')
+
+        # Configure IO7 to be closed
+        #flash_device.set_io7(mode = 'closed')
+
+        # Change primary and altenate energy levels
+        flash_device.set_energy_levels(prim_energy_level = 9, alt_energy_level = 8)
+
+    except ModbusError as exc:
+        print(f'Modbus error: {exc}')
+
+        time.sleep(1)
+
+    print ("--- Register the terminal output function has feedback handler:")
+    modbus_link.register_feedback_handler(terminal_output)
+    print ("--- Read IOs state again:")
+    try: 
+        io_dict = flash_device.get_io_state(output = 'dict')
+        print (f'io_state: {io_dict}')
+
+    except ModbusError as exc:
+        print(f'Modbus error: {exc}')
+    print ("\n")
+    # Close the modbus link
     modbus_link.close()
-    #flash_device.execute_cmd('RESET')
+
+    #flash_device.save_settings()
+    #flash_device.reset()

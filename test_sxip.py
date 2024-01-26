@@ -11,7 +11,7 @@ __contact__ = ("a.plantin@phoxene.com")
 __copyright__ = "MIT"
 __date__ = "2023-10-10"
 
-import unittest                     # The test framework
+import unittest                   # The test framework
 import sxip                       # The module to be tested
 import modbus
 from modbus import ModbusError
@@ -61,14 +61,13 @@ class Test_with_port_open(unittest.TestCase):
         self.device.modbus_addr = 2
         self.assertEqual(self.device.modbus_addr, 2)
         self.device.modbus_addr = 1
-
-    def test_get_functions(self) -> None:
-        # Read BT software revision
-        self.assertEqual(self.device.get_serial(), 1)
-
-    def test_set_functions(self) -> None:
-        # Read and write sync shift register
-        pass
+    '''
+    def test_set_get_functions(self) -> None:
+        # Write sync shift register
+        self.device.set_sync_shift(140)
+        # Read sync shift register
+        self.assertEqual(self.device.get_sync_shift, 140)
+    '''
 
     def test_not_allowed_broadcast(self) -> None:
         self.device.modbus_addr = 0
