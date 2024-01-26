@@ -31,7 +31,7 @@ Tested on Windows 10 and Debian 12.2
 ![Debian Logo](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white)
 
 # Licence
-MIT License Copyright (c) 2023 PHOXENE
+MIT License Copyright (c) 2024 PHOXENE
 
 See LICENSE file
 

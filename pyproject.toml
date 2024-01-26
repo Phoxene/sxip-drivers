@@ -1,17 +1,20 @@
+[tool.hatch.build.targets.wheel]
+packages = ["sxip-drivers"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
 name = "sxip-drivers"
-version = "1.0.5-a"
+version = "1.0a5"
 license = "MIT"
 authors = [
   { name="Aurelien PLANTIN", email="a.plantin@phoxene.com"}
 ]
 
 dependencies = [
-  "phox-modbus>=1.0.1",
+  "phox-modbus>=1.1.0",
 ]
 
 keywords = ["python", "phoxene", "SxIP"] 

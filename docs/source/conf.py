@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'sxip_drivers'
-copyright = '2023, PHOXENE'
+copyright = '2024, PHOXENE'
 author = 'Aurélien PLANTIN'
 # Import de la version depuis le fichier projet
 # Bidouille APLAN
